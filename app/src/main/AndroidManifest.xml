@@ -13,10 +13,7 @@
         android:theme="@style/Theme.TravelApp"
         tools:targetApi="31">
         <activity
-            android:name=".adapter.PostAdapter"
-            android:exported="false" />
-        <activity
-            android:name=".Post"
+            android:name=".ApprovePostsActivity"
             android:exported="false" />
         <activity
             android:name=".RegisterActivity"

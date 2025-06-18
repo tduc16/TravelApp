@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import vn.edu.tlu.nhom13.travelapp.ApprovePostsActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Ánh xạ nút
         btnApprovePosts = findViewById(R.id.btnApprovePosts);
+        btnApprovePosts.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ApprovePostsActivity.class);
+            startActivity(intent);
+        });
 
         // Nhận dữ liệu từ Intent (LoginActivity)
         Intent intent = getIntent();
@@ -71,11 +76,5 @@ public class MainActivity extends AppCompatActivity {
         } else {
             btnApprovePosts.setVisibility(View.GONE);
         }
-
-        // Bắt sự kiện nếu admin nhấn "Duyệt bài"
-        btnApprovePosts.setOnClickListener(v -> {
-            Toast.makeText(this, "Chuyển đến màn duyệt bài...", Toast.LENGTH_SHORT).show();
-            // TODO: mở AdminActivity hoặc DuyetBaiActivity
-        });
     }
 }

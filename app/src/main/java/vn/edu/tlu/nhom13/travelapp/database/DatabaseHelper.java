@@ -42,6 +42,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "('Hội An cổ kính', 'Phố cổ lung linh đèn lồng về đêm, di sản văn hóa', 'Trung', '', 'approved', 2)," +
                 "('Huế - Kinh đô xưa', 'Đại Nội, lăng tẩm, chùa Thiên Mụ', 'Trung', '', 'approved', 2)," +
                 "('TP.HCM sôi động', 'Cuộc sống năng động, chợ Bến Thành, Bitexco', 'Nam', '', 'approved', 2)," +
+                "('Bãi Cát Mũi Né', 'Có nhiều đồi cát lớn, trượt cát, biển ninh thuận', 'Nam', '', 'pending', 2)," +
+                "('Bãi Cát Mũi Né', 'Có nhiều đồi cát lớn, trượt cát, biển ninh thuận', 'Nam', '', 'pending', 2)," +
+                "('Bà Nà Hills', 'Khu nghỉ dưỡng trên núi với cầu vàng nổi tiếng tại Đà Nẵng', 'Trung', '', 'pending', 2)," +
+                "('Tam Đảo', 'Thị trấn trên núi mát mẻ quanh năm, gần Hà Nội', 'Bắc', '', 'pending', 2)," +
+                "('Biển Lý Sơn', 'Hòn đảo xanh mát với hải sản tươi sống, thuộc Quảng Ngãi', 'Trung', '', 'pending', 2)," +
+                "('Thác Pongour', 'Thác nước đẹp nhất Lâm Đồng, được gọi là Nam Thiên Đệ Nhất Thác', 'Nam', '', 'pending', 2),"+
                 "('Cần Thơ miền Tây', 'Chợ nổi Cái Răng, miệt vườn trái cây', 'Nam', '', 'approved', 2);");
 
         // Thêm tài khoản admin mặc định
@@ -109,5 +115,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return postList;
+    }
+    public List<Post> getPendingPosts() {
+        List<Post> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM Posts WHERE status = 'pending'", null);
+        while (cursor.moveToNext()) {
+            Post post = new Post();
+            post.setId(cursor.getInt(0));
+            post.setTitle(cursor.getString(1));
+            post.setDescription(cursor.getString(2));
+            post.setRegion(cursor.getString(3));
+            post.setImagePath(cursor.getString(4));
+            post.setStatus(cursor.getString(5));
+            post.setUserId(cursor.getInt(6));
+            list.add(post);
+        }
+        cursor.close();
+        return list;
+    }
+
+    public void approvePost(int postId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("status", "approved");
+        db.update("Posts", values, "id = ?", new String[]{String.valueOf(postId)});
+    }
+
+    public void deletePost(int postId) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("Posts", "id = ?", new String[]{String.valueOf(postId)});
     }
 }
