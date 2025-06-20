@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">TravelApp</string>
-
+    <string name="hint_title">Tiêu đề</string>
+    <string name="hint_description">Mô tả</string>
+    <string name="btn_choose_image">Chọn ảnh</string>
+    <string name="btn_submit_post">Thêm bài viết</string>
+    <string name="img_preview_desc">Xem trước hình ảnh bài viết</string>
 </resources>

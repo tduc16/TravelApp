@@ -2,12 +2,14 @@ package vn.edu.tlu.nhom13.travelapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import vn.edu.tlu.nhom13.travelapp.ApprovePostsActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,10 +22,12 @@ import vn.edu.tlu.nhom13.travelapp.models.Post;
 public class MainActivity extends AppCompatActivity {
 
     DatabaseHelper dbHelper;
-    Button btnApprovePosts; // nút duyệt bài viết
-    String role = "user";   // mặc định là user
-    int userId = -1;        // ID người dùng
-    String username = "";   // tên đăng nhập
+    Button btnApprovePosts;
+    EditText edtSearch;
+
+    String role = "user";
+    int userId = -1;
+    String username = "";
 
     RecyclerView recyclerView;
     PostAdapter adapter;
@@ -33,48 +37,60 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Ánh xạ view
         recyclerView = findViewById(R.id.recyclerView);
+        btnApprovePosts = findViewById(R.id.btnApprovePosts);
+        edtSearch = findViewById(R.id.edtSearch); // cần có trong layout
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        dbHelper = new DatabaseHelper(this);
-        postList = dbHelper.getApprovedPosts(); // lấy bài đã duyệt
-
-        adapter = new PostAdapter(this, postList);
-        recyclerView.setAdapter(adapter);
-        dbHelper = new DatabaseHelper(this);
-
-        // Ánh xạ nút
-        btnApprovePosts = findViewById(R.id.btnApprovePosts);
-        btnApprovePosts.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ApprovePostsActivity.class);
-            startActivity(intent);
-        });
-
-        // Nhận dữ liệu từ Intent (LoginActivity)
+        // Lấy thông tin từ Intent
         Intent intent = getIntent();
         role = intent.getStringExtra("role");
         username = intent.getStringExtra("username");
         userId = intent.getIntExtra("userId", -1);
 
-        // Gán mặc định nếu thiếu
         if (role == null) role = "user";
         if (username == null) username = "";
 
-        // Kiểm tra userId hợp lệ
         if (userId == -1) {
             Toast.makeText(this, "Lỗi khi nhận userId", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        // Hiển thị thông báo
         Toast.makeText(this, "Xin chào " + username + " (" + role + ")", Toast.LENGTH_SHORT).show();
 
-        // Phân quyền
+        // Hiện nút duyệt bài nếu là admin
         if (role.equals("admin")) {
             btnApprovePosts.setVisibility(View.VISIBLE);
         } else {
             btnApprovePosts.setVisibility(View.GONE);
         }
+
+        // Mở trang duyệt bài viết
+        btnApprovePosts.setOnClickListener(v -> {
+            Intent i = new Intent(MainActivity.this, ApprovePostsActivity.class);
+            startActivity(i);
+        });
+
+        // Khởi tạo database và adapter
+        dbHelper = new DatabaseHelper(this);
+        postList = dbHelper.getApprovedPosts();
+        adapter = new PostAdapter(this, postList);
+        recyclerView.setAdapter(adapter);
+
+        // Tìm kiếm tiêu đề
+        edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.filter(s.toString());
+            }
+        });
     }
 }
+

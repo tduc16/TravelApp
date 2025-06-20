@@ -1,9 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:padding="12dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:elevation="2dp">
 
+    <!-- Ảnh bài viết -->
     <ImageView
         android:id="@+id/imgPost"
         android:layout_width="match_parent"
@@ -11,39 +15,69 @@
         android:scaleType="centerCrop"
         android:src="@drawable/ic_launcher_background" />
 
+    <!-- Tiêu đề -->
     <TextView
         android:id="@+id/txtTitle"
+        android:layout_marginTop="8dp"
+        android:text="Tiêu đề bài viết"
         android:textStyle="bold"
         android:textSize="18sp"
-        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <!-- Khu vực -->
     <TextView
         android:id="@+id/txtRegion"
+        android:text="Khu vực"
+        android:textColor="#666666"
         android:textStyle="italic"
         android:textSize="14sp"
-        android:textColor="#666"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <!-- Mô tả -->
     <TextView
         android:id="@+id/txtDescription"
-        android:textSize="14sp"
         android:layout_marginTop="4dp"
+        android:text="Mô tả bài viết"
+        android:textSize="14sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-    <Button
-        android:id="@+id/btnApprove"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Duyệt"
-        android:visibility="gone" />
 
-    <Button
-        android:id="@+id/btnDelete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Xóa"
-        android:visibility="gone" />
+    <!-- Các nút chức năng: Duyệt / Xóa / Sửa -->
+    <LinearLayout
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnApprove"
+            android:text="Duyệt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:text="Xóa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/btnEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_edit"
+            android:contentDescription="Sửa bài viết"
+            android:visibility="gone" />
+    </LinearLayout>
+
 </LinearLayout>
+
+
