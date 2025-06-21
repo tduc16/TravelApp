@@ -33,19 +33,37 @@ public class EditPostActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, regions);
         spnRegion.setAdapter(adapter);
 
-        // Lấy dữ liệu từ intent
+        // Lấy postId từ Intent
         Intent intent = getIntent();
         postId = intent.getIntExtra("postId", -1);
-        String title = intent.getStringExtra("title");
-        String desc = intent.getStringExtra("description");
-        String region = intent.getStringExtra("region");
-        imagePath = intent.getStringExtra("imagePath");
 
-        edtTitle.setText(title);
-        edtDescription.setText(desc);
-        spnRegion.setSelection(adapter.getPosition(region));
-        if (imagePath != null) {
-            imgPreview.setImageURI(Uri.parse(imagePath));
+        if (postId == -1) {
+            Toast.makeText(this, "Lỗi: Không tìm thấy bài viết", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        // Truy vấn dữ liệu từ cơ sở dữ liệu
+        DatabaseHelper db = new DatabaseHelper(this);
+        Post post = db.getPostById(postId);
+
+        if (post != null) {
+            edtTitle.setText(post.getTitle());
+            edtDescription.setText(post.getDescription());
+            spnRegion.setSelection(adapter.getPosition(post.getRegion()));
+            imagePath = post.getImagePath();
+            if (imagePath != null && !imagePath.isEmpty()) {
+                int resId = getResources().getIdentifier(imagePath, "drawable", getPackageName());
+                if (resId != 0) {
+                    imgPreview.setImageResource(resId); // Sử dụng drawable
+                } else {
+                    imgPreview.setImageResource(android.R.color.darker_gray); // Ảnh mặc định
+                }
+            }
+        } else {
+            Toast.makeText(this, "Không tìm thấy bài viết", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
         }
 
         btnUpdate.setOnClickListener(v -> {
@@ -58,8 +76,8 @@ public class EditPostActivity extends AppCompatActivity {
                 return;
             }
 
-            DatabaseHelper db = new DatabaseHelper(this);
-            db.updatePost(postId, newTitle, newDesc, newRegion, imagePath); // sửa trong CSDL
+            DatabaseHelper dbHelper = new DatabaseHelper(this);
+            dbHelper.updatePost(postId, newTitle, newDesc, newRegion, imagePath);
 
             Toast.makeText(this, "Đã cập nhật bài viết", Toast.LENGTH_SHORT).show();
             finish();

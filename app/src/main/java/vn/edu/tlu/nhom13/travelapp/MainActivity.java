@@ -17,6 +17,7 @@ import java.util.List;
 
 import vn.edu.tlu.nhom13.travelapp.adapter.PostAdapter;
 import vn.edu.tlu.nhom13.travelapp.database.DatabaseHelper;
+import vn.edu.tlu.nhom13.travelapp.ApprovePostsActivity;
 import vn.edu.tlu.nhom13.travelapp.models.Post;
 
 public class MainActivity extends AppCompatActivity {
@@ -86,6 +87,12 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, EditPostActivity.class);
             intent.putExtra("postId", post.getId());
             startActivity(intent);
+        }, post -> {
+            // Khi nhấn nút "Thêm", chuyển sang AddPostActivity (thêm bài viết mới)
+            Intent intent = new Intent(MainActivity.this, AddPostActivity.class);
+            // Có thể truyền userId nếu cần
+            intent.putExtra("postId", userId);
+            startActivity(intent);
         });
 
         recyclerView.setAdapter(adapter);
@@ -102,7 +109,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        reloadPostList(); // Load lại danh sách bài viết khi quay lại activity
+    }
+
+    private void reloadPostList() {
+        postList = dbHelper.getApprovedPosts();
+        adapter.setData(postList);
+        adapter.notifyDataSetChanged();
+    }
+
 }
-
-
-

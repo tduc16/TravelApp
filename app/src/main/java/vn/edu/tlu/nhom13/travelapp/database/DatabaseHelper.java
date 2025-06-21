@@ -180,6 +180,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         post.setUserId(cursor.getInt(6));
         return post;
     }
+
+    public Post getPostById(int postId) {
+        try (SQLiteDatabase db = getReadableDatabase();
+             Cursor cursor = db.rawQuery("SELECT * FROM Posts WHERE id = ?", new String[]{String.valueOf(postId)})) {
+            if (cursor.moveToFirst()) {
+                return cursorToPost(cursor);
+            }
+            return null;
+        }
+    }
 }
 
 

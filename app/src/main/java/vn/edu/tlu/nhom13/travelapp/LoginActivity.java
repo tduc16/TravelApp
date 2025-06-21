@@ -41,22 +41,21 @@ public class LoginActivity extends AppCompatActivity {
             if (role != null) {
                 Toast.makeText(this, "Đăng nhập thành công: " + role, Toast.LENGTH_SHORT).show();
 
-                int userId = dbHelper.getUserId(user);
-
                 // ✅ Lưu username vào SharedPreferences
                 SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("username", user);
-                editor.putInt("userId", userId);
-                editor.putString("role", role);
                 editor.apply();
 
-                // Chuyển sang MainActivity
+                // ✅ Chuyển sang MainActivity
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.putExtra("userId", dbHelper.getUserId(user));
+                intent.putExtra("username", user);
+                intent.putExtra("role", role);
                 startActivity(intent);
                 finish();
-
-            } else {
+            }
+            else {
                 Toast.makeText(this, "Sai tài khoản hoặc mật khẩu", Toast.LENGTH_SHORT).show();
             }
         });

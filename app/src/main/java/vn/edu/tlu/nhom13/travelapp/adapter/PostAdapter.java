@@ -26,18 +26,25 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private final List<Post> postList;
     private final List<Post> postListFull;
     private final OnEditClickListener editClickListener;
+    private final OnAddClickListener addClickListener;
     private int currentUserId;
 
     public interface OnEditClickListener {
         void onEditClick(Post post);
     }
 
-    public PostAdapter(Context context, List<Post> postList, int currentUserId, OnEditClickListener listener) {
+    public interface OnAddClickListener {
+        void onAddClick(Post post);
+    }
+
+    public PostAdapter(Context context, List<Post> postList, int currentUserId,
+                       OnEditClickListener editClickListener, OnAddClickListener addClickListener) {
         this.context = context;
         this.postList = postList;
         this.postListFull = new ArrayList<>(postList);
         this.currentUserId = currentUserId;
-        this.editClickListener = listener;
+        this.editClickListener = editClickListener;
+        this.addClickListener = addClickListener;
     }
 
     @NonNull
@@ -69,8 +76,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     editClickListener.onEditClick(post);
                 }
             });
+
+            // Hiển thị nút thêm
+            holder.btnAdd.setVisibility(View.VISIBLE);
+            holder.btnAdd.setOnClickListener(v -> {
+                if (addClickListener != null) {
+                    addClickListener.onAddClick(post);
+                }
+            });
         } else {
             holder.btnEdit.setVisibility(View.GONE);
+            holder.btnAdd.setVisibility(View.GONE);
         }
     }
 
@@ -78,6 +94,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public int getItemCount() {
         return postList.size();
     }
+    public void setData(List<Post> newPostList) {
+        postList.clear();
+        postList.addAll(newPostList);
+
+        postListFull.clear();
+        postListFull.addAll(newPostList);
+
+        notifyDataSetChanged();
+    }
+
 
     public void filter(String keyword) {
         postList.clear();
@@ -97,7 +123,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle, txtRegion, txtDescription;
         ImageView imgPost;
-        ImageButton btnEdit;
+        ImageButton btnEdit, btnAdd;
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -105,14 +131,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             txtRegion = itemView.findViewById(R.id.txtRegion);
             txtDescription = itemView.findViewById(R.id.txtDescription);
             imgPost = itemView.findViewById(R.id.imgPost);
-            btnEdit = itemView.findViewById(R.id.btnEdit); // ImageButton phải tồn tại trong item_post.xml
+            btnEdit = itemView.findViewById(R.id.btnEdit);
+            btnAdd = itemView.findViewById(R.id.btnAdd); // ImageButton phải tồn tại trong item_post.xml
         }
     }
 }
-
-
-
-
-
-
-

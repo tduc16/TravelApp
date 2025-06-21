@@ -3,12 +3,15 @@ package vn.edu.tlu.nhom13.travelapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.*;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import vn.edu.tlu.nhom13.travelapp.database.DatabaseHelper;
 
@@ -36,6 +39,13 @@ public class AddPostActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_post);
 
+        // Kiểm tra và xin quyền truy cập bộ nhớ nếu chưa có
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+        }
+
         edtTitle = findViewById(R.id.edtTitle);
         edtDescription = findViewById(R.id.edtDescription);
         spnRegion = findViewById(R.id.spnRegion);
@@ -51,7 +61,7 @@ public class AddPostActivity extends AppCompatActivity {
 
         // Chọn ảnh
         btnChooseImage.setOnClickListener(view -> {
-            Intent intent = new Intent(Intent.ACTION_PICK);
+            Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             intent.setType("image/*");
             pickImageLauncher.launch(intent);
         });
@@ -89,5 +99,18 @@ public class AddPostActivity extends AppCompatActivity {
                 Toast.makeText(this, "Thêm thất bại", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    // Xử lý kết quả xin quyền
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Đã cấp quyền truy cập ảnh", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Ứng dụng cần quyền truy cập ảnh để chọn ảnh", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

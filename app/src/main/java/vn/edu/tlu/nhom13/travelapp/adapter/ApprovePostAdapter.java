@@ -21,11 +21,17 @@ public class ApprovePostAdapter extends RecyclerView.Adapter<ApprovePostAdapter.
     private Context context;
     private List<Post> postList;
     private DatabaseHelper db;
+    private Runnable refreshCallback;
 
-    public ApprovePostAdapter(Context context, List<Post> postList, DatabaseHelper db) {
+    public ApprovePostAdapter(Context context, List<Post> postList, DatabaseHelper db, Runnable refreshCallback) {
         this.context = context;
         this.postList = postList;
         this.db = db;
+        this.refreshCallback = refreshCallback;
+    }
+
+    public void setData(List<Post> newPostList) {
+        this.postList = newPostList;
     }
 
     @NonNull
@@ -42,20 +48,24 @@ public class ApprovePostAdapter extends RecyclerView.Adapter<ApprovePostAdapter.
         holder.txtRegion.setText(post.getRegion());
         holder.txtDescription.setText(post.getDescription());
 
+        // Nút duyệt
         holder.btnApprove.setVisibility(View.VISIBLE);
         holder.btnApprove.setOnClickListener(v -> {
             db.approvePost(post.getId());
-            postList.remove(position);
-            notifyItemRemoved(position);
             Toast.makeText(context, "Đã duyệt bài viết", Toast.LENGTH_SHORT).show();
+            if (refreshCallback != null) {
+                refreshCallback.run(); // Gọi Activity load lại danh sách
+            }
         });
 
+        // Nút xóa
         holder.btnDelete.setVisibility(View.VISIBLE);
         holder.btnDelete.setOnClickListener(v -> {
             db.deletePost(post.getId());
-            postList.remove(position);
-            notifyItemRemoved(position);
             Toast.makeText(context, "Đã xóa bài viết", Toast.LENGTH_SHORT).show();
+            if (refreshCallback != null) {
+                refreshCallback.run(); // Gọi Activity load lại danh sách
+            }
         });
     }
 

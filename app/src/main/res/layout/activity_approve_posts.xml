@@ -9,10 +9,11 @@
         android:id="@+id/recyclerApprove"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:padding="12dp"
+        android:contentDescription="Danh sách bài viết chờ duyệt"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:padding="12dp"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
