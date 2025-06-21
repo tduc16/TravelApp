@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.widget.*;
-import androidx.annotation.Nullable;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import vn.edu.tlu.nhom13.travelapp.database.DatabaseHelper;
@@ -20,7 +20,16 @@ public class AddPostActivity extends AppCompatActivity {
     Button btnChooseImage, btnSubmit;
     Uri imageUri = null;
 
-    static final int PICK_IMAGE_REQUEST = 100;
+    // Khai báo ActivityResultLauncher để chọn ảnh
+    private final ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    imageUri = result.getData().getData();
+                    imgPreview.setImageURI(imageUri);
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +53,7 @@ public class AddPostActivity extends AppCompatActivity {
         btnChooseImage.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
-            startActivityForResult(intent, PICK_IMAGE_REQUEST);
+            pickImageLauncher.launch(intent);
         });
 
         // Thêm bài viết
@@ -81,14 +90,4 @@ public class AddPostActivity extends AppCompatActivity {
             }
         });
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            imageUri = data.getData();
-            imgPreview.setImageURI(imageUri);
-        }
-    }
 }
-

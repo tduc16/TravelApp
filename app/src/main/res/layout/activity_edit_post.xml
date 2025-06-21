@@ -7,37 +7,46 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:gravity="center_horizontal">
 
         <EditText
             android:id="@+id/edtTitle"
-            android:hint="Tiêu đề"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="56dp"
+            android:hint="@string/hint_title"
+            android:inputType="textCapSentences"
+            android:autofillHints="username"
+            android:textColor="@android:color/black"
+            android:backgroundTint="@android:color/darker_gray"
+            android:padding="12dp" />
 
         <EditText
             android:id="@+id/edtDescription"
-            android:hint="Mô tả"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="120dp"
+            android:hint="@string/hint_description"
+            android:inputType="textMultiLine"
+            android:autofillHints="description"
+            android:textColor="@android:color/black"
+            android:backgroundTint="@android:color/darker_gray"
+            android:padding="12dp" />
 
         <Spinner
             android:id="@+id/spnRegion"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <ImageView
-            android:id="@+id/imgPreview"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop"
-            android:layout_marginTop="16dp" />
+            android:layout_height="56dp"
+            android:padding="12dp"
+            android:backgroundTint="@android:color/darker_gray" />
 
         <Button
             android:id="@+id/btnUpdate"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Cập nhật bài viết"
-            android:layout_marginTop="16dp" />
+            android:layout_height="56dp"
+            android:text="@string/btn_update_post"
+            android:textColor="@android:color/white"
+            android:backgroundTint="?android:attr/colorAccent" />
     </LinearLayout>
 </ScrollView>
+
+

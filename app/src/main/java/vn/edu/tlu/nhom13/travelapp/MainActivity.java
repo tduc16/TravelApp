@@ -21,38 +21,24 @@ import vn.edu.tlu.nhom13.travelapp.models.Post;
 
 public class MainActivity extends AppCompatActivity {
 
-    DatabaseHelper dbHelper;
-    Button btnApprovePosts;
-    EditText edtSearch;
+    private DatabaseHelper dbHelper;
+    private Button btnApprovePosts;
+    private EditText edtSearch;
+    private RecyclerView recyclerView;
+    private PostAdapter adapter;
+    private List<Post> postList;
 
-    String role = "user";
-    int userId = -1;
-    String username = "";
-
-    RecyclerView recyclerView;
-    PostAdapter adapter;
-    List<Post> postList;
+    private String role = "user";
+    private int userId = -1;
+    private String username = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Ánh xạ view
-        recyclerView = findViewById(R.id.recyclerView);
-        btnApprovePosts = findViewById(R.id.btnApprovePosts);
-        edtSearch = findViewById(R.id.edtSearch); // cần có trong layout
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // Lấy thông tin từ Intent
-        Intent intent = getIntent();
-        role = intent.getStringExtra("role");
-        username = intent.getStringExtra("username");
-        userId = intent.getIntExtra("userId", -1);
-
-        if (role == null) role = "user";
-        if (username == null) username = "";
+        initViews();
+        getUserInfoFromIntent();
 
         if (userId == -1) {
             Toast.makeText(this, "Lỗi khi nhận userId", Toast.LENGTH_SHORT).show();
@@ -61,27 +47,51 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Toast.makeText(this, "Xin chào " + username + " (" + role + ")", Toast.LENGTH_SHORT).show();
+        btnApprovePosts.setVisibility(role.equals("admin") ? View.VISIBLE : View.GONE);
 
-        // Hiện nút duyệt bài nếu là admin
-        if (role.equals("admin")) {
-            btnApprovePosts.setVisibility(View.VISIBLE);
-        } else {
-            btnApprovePosts.setVisibility(View.GONE);
-        }
-
-        // Mở trang duyệt bài viết
         btnApprovePosts.setOnClickListener(v -> {
-            Intent i = new Intent(MainActivity.this, ApprovePostsActivity.class);
-            startActivity(i);
+            Intent intent = new Intent(MainActivity.this, ApprovePostsActivity.class);
+            startActivity(intent);
         });
 
-        // Khởi tạo database và adapter
+        setupRecyclerView();
+        setupSearchFilter();
+    }
+
+    private void initViews() {
+        recyclerView = findViewById(R.id.recyclerView);
+        btnApprovePosts = findViewById(R.id.btnApprovePosts);
+        edtSearch = findViewById(R.id.edtSearch);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void getUserInfoFromIntent() {
+        Intent intent = getIntent();
+        if (intent != null) {
+            role = intent.getStringExtra("role");
+            username = intent.getStringExtra("username");
+            userId = intent.getIntExtra("userId", -1);
+
+            if (role == null) role = "user";
+            if (username == null) username = "";
+        }
+    }
+
+    private void setupRecyclerView() {
         dbHelper = new DatabaseHelper(this);
         postList = dbHelper.getApprovedPosts();
-        adapter = new PostAdapter(this, postList);
-        recyclerView.setAdapter(adapter);
 
-        // Tìm kiếm tiêu đề
+        adapter = new PostAdapter(this, postList, userId, post -> {
+            // Khi nhấn nút chỉnh sửa, chuyển sang EditPostActivity
+            Intent intent = new Intent(MainActivity.this, EditPostActivity.class);
+            intent.putExtra("postId", post.getId());
+            startActivity(intent);
+        });
+
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void setupSearchFilter() {
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void afterTextChanged(Editable s) {}
@@ -93,4 +103,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 }
+
+
 

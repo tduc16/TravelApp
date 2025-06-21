@@ -1,7 +1,17 @@
 <resources>
+    <!-- App name -->
+    <string name="app_name">TravelApp</string>
+
+    <!-- Hint for input fields -->
     <string name="hint_title">Tiêu đề</string>
     <string name="hint_description">Mô tả</string>
+
+    <!-- Button labels -->
     <string name="btn_choose_image">Chọn ảnh</string>
     <string name="btn_submit_post">Thêm bài viết</string>
+    <string name="btn_update_post">Cập nhật bài viết</string>
+
+    <!-- Image preview -->
     <string name="img_preview_desc">Xem trước hình ảnh bài viết</string>
 </resources>
+
