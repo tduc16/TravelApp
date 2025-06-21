@@ -1,6 +1,7 @@
 package vn.edu.tlu.nhom13.travelapp.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.List;
 
+import vn.edu.tlu.nhom13.travelapp.PostDetailActivity;
 import vn.edu.tlu.nhom13.travelapp.R;
 import vn.edu.tlu.nhom13.travelapp.models.Post;
 
@@ -68,22 +70,33 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.imgPost.setImageResource(R.drawable.ic_launcher_background);
         }
 
-        // Hiển thị nút chỉnh sửa nếu là bài viết của chính user
+        // Click để xem chi tiết
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, PostDetailActivity.class);
+            intent.putExtra("title", post.getTitle());
+            intent.putExtra("description", post.getDescription());
+            intent.putExtra("region", post.getRegion());
+            intent.putExtra("imagePath", post.getImagePath());
+            context.startActivity(intent);
+        });
+
+        // Chỉ hiển thị nút nếu là bài viết của user đang đăng nhập
         if (post.getUserId() == currentUserId) {
             holder.btnEdit.setVisibility(View.VISIBLE);
+            holder.btnAdd.setVisibility(View.VISIBLE);
+
             holder.btnEdit.setOnClickListener(v -> {
                 if (editClickListener != null) {
                     editClickListener.onEditClick(post);
                 }
             });
 
-            // Hiển thị nút thêm
-            holder.btnAdd.setVisibility(View.VISIBLE);
             holder.btnAdd.setOnClickListener(v -> {
                 if (addClickListener != null) {
                     addClickListener.onAddClick(post);
                 }
             });
+
         } else {
             holder.btnEdit.setVisibility(View.GONE);
             holder.btnAdd.setVisibility(View.GONE);
@@ -94,6 +107,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public int getItemCount() {
         return postList.size();
     }
+
     public void setData(List<Post> newPostList) {
         postList.clear();
         postList.addAll(newPostList);
@@ -103,7 +117,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         notifyDataSetChanged();
     }
-
 
     public void filter(String keyword) {
         postList.clear();
@@ -132,7 +145,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             txtDescription = itemView.findViewById(R.id.txtDescription);
             imgPost = itemView.findViewById(R.id.imgPost);
             btnEdit = itemView.findViewById(R.id.btnEdit);
-            btnAdd = itemView.findViewById(R.id.btnAdd); // ImageButton phải tồn tại trong item_post.xml
+            btnAdd = itemView.findViewById(R.id.btnAdd);
         }
     }
 }
