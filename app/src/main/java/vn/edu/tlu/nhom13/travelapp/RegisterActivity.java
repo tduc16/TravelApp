@@ -59,10 +59,11 @@ public class RegisterActivity extends AppCompatActivity {
             String role = selectedId == R.id.rbUser ? "user" : "admin";
 
             // Kiểm tra trùng tài khoản
-            if (dbHelper.loginUser(username, password) != null) {
+            if (dbHelper.isUsernameExists(username)) {
                 Toast.makeText(this, "Tên tài khoản đã tồn tại!", Toast.LENGTH_SHORT).show();
                 return;
             }
+
 
             boolean result = dbHelper.registerUser(username, password, role);
             if (result) {
@@ -71,6 +72,7 @@ public class RegisterActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "Đăng ký thất bại!", Toast.LENGTH_SHORT).show();
             }
+
         });
     }
 }

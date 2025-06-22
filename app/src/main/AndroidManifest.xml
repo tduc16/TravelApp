@@ -15,6 +15,9 @@
         android:theme="@style/Theme.TravelApp"
         tools:targetApi="31">
         <activity
+            android:name=".ManagePostsActivity"
+            android:exported="false" />
+        <activity
             android:name=".PostDetailActivity"
             android:exported="false" />
         <activity
@@ -32,7 +35,6 @@
         <activity
             android:name=".EditPostActivity"
             android:label="Edit Post" />
-
         <activity
             android:name=".LoginActivity"
             android:exported="true">

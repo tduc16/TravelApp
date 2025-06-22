@@ -190,6 +190,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return null;
         }
     }
+    public boolean isUsernameExists(String username) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT id FROM Users WHERE username = ?", new String[]{username});
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        return exists;
+    }
 }
 
 

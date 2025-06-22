@@ -7,6 +7,9 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,17 +20,18 @@ import java.util.List;
 
 import vn.edu.tlu.nhom13.travelapp.adapter.PostAdapter;
 import vn.edu.tlu.nhom13.travelapp.database.DatabaseHelper;
-import vn.edu.tlu.nhom13.travelapp.ApprovePostsActivity;
 import vn.edu.tlu.nhom13.travelapp.models.Post;
 
 public class MainActivity extends AppCompatActivity {
 
     private DatabaseHelper dbHelper;
-    private Button btnApprovePosts;
     private EditText edtSearch;
     private RecyclerView recyclerView;
     private PostAdapter adapter;
     private List<Post> postList;
+
+    private ImageView imgAvatar;
+    private TextView txtUsername;
 
     private String role = "user";
     private int userId = -1;
@@ -47,13 +51,8 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        Toast.makeText(this, "Xin chào " + username + " (" + role + ")", Toast.LENGTH_SHORT).show();
-        btnApprovePosts.setVisibility(role.equals("admin") ? View.VISIBLE : View.GONE);
-
-        btnApprovePosts.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ApprovePostsActivity.class);
-            startActivity(intent);
-        });
+        txtUsername.setText(username);
+        imgAvatar.setOnClickListener(v -> showUserMenu());
 
         setupRecyclerView();
         setupSearchFilter();
@@ -61,8 +60,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void initViews() {
         recyclerView = findViewById(R.id.recyclerView);
-        btnApprovePosts = findViewById(R.id.btnApprovePosts);
         edtSearch = findViewById(R.id.edtSearch);
+        imgAvatar = findViewById(R.id.imgAvatar);
+        txtUsername = findViewById(R.id.txtUsername);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
@@ -83,15 +84,12 @@ public class MainActivity extends AppCompatActivity {
         postList = dbHelper.getApprovedPosts();
 
         adapter = new PostAdapter(this, postList, userId, post -> {
-            // Khi nhấn nút chỉnh sửa, chuyển sang EditPostActivity
             Intent intent = new Intent(MainActivity.this, EditPostActivity.class);
             intent.putExtra("postId", post.getId());
             startActivity(intent);
         }, post -> {
-            // Khi nhấn nút "Thêm", chuyển sang AddPostActivity (thêm bài viết mới)
             Intent intent = new Intent(MainActivity.this, AddPostActivity.class);
-            // Có thể truyền userId nếu cần
-            intent.putExtra("postId", userId);
+            intent.putExtra("userId", userId);
             startActivity(intent);
         });
 
@@ -109,10 +107,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void showUserMenu() {
+        PopupMenu popup = new PopupMenu(this, imgAvatar);
+        popup.getMenuInflater().inflate(R.menu.user_menu, popup.getMenu());
+
+        if (role.equals("user")) {
+            popup.getMenu().findItem(R.id.menu_approve).setVisible(false);
+            popup.getMenu().findItem(R.id.menu_manage).setVisible(false);
+        }
+
+        popup.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.menu_add) {
+                Intent intent = new Intent(MainActivity.this, AddPostActivity.class);
+                intent.putExtra("userId", userId);
+                startActivity(intent);
+            } else if (id == R.id.menu_approve) {
+                startActivity(new Intent(this, ApprovePostsActivity.class));
+            } else if (id == R.id.menu_manage) {
+                startActivity(new Intent(this, ManagePostsActivity.class));
+            }
+            return true;
+        });
+
+        popup.show();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        reloadPostList(); // Load lại danh sách bài viết khi quay lại activity
+        reloadPostList();
     }
 
     private void reloadPostList() {
@@ -120,5 +145,4 @@ public class MainActivity extends AppCompatActivity {
         adapter.setData(postList);
         adapter.notifyDataSetChanged();
     }
-
 }

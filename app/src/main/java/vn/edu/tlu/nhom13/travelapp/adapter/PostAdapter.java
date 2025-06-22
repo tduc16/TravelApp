@@ -83,7 +83,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         // Chỉ hiển thị nút nếu là bài viết của user đang đăng nhập
         if (post.getUserId() == currentUserId) {
             holder.btnEdit.setVisibility(View.VISIBLE);
-            holder.btnAdd.setVisibility(View.VISIBLE);
 
             holder.btnEdit.setOnClickListener(v -> {
                 if (editClickListener != null) {
@@ -91,15 +90,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 }
             });
 
-            holder.btnAdd.setOnClickListener(v -> {
-                if (addClickListener != null) {
-                    addClickListener.onAddClick(post);
-                }
-            });
-
         } else {
             holder.btnEdit.setVisibility(View.GONE);
-            holder.btnAdd.setVisibility(View.GONE);
+
         }
     }
 
@@ -136,7 +129,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle, txtRegion, txtDescription;
         ImageView imgPost;
-        ImageButton btnEdit, btnAdd;
+        ImageButton btnEdit;
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -145,7 +138,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             txtDescription = itemView.findViewById(R.id.txtDescription);
             imgPost = itemView.findViewById(R.id.imgPost);
             btnEdit = itemView.findViewById(R.id.btnEdit);
-            btnAdd = itemView.findViewById(R.id.btnAdd);
         }
     }
 }
