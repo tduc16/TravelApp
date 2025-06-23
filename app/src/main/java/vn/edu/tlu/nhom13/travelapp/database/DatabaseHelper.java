@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import vn.edu.tlu.nhom13.travelapp.models.Comment;
+import android.util.Log;
 import vn.edu.tlu.nhom13.travelapp.database.DatabaseHelper;
 
 
@@ -242,6 +243,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return list;
     }
+
     // 🔹 Thêm bình luận
     public boolean addComment(int postId, int userId, String username, String content) {
         SQLiteDatabase db = getWritableDatabase();
@@ -251,28 +253,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("username", username);  // thêm username
         values.put("content", content);
         values.put("timestamp", System.currentTimeMillis());
+
+        Log.d("COMMENT_ADD", "postId: " + postId + ", userId: " + userId + ", username: " + username + ", content: " + content);
+
         long result = db.insert("Comments", null, values);
         db.close();
         return result != -1;
     }
 
 
-    // 🔹 Lấy danh sách bình luận theo postId
+    // 🔹 Lấy danh sách bình luận theo postId (đã sửa để lấy đầy đủ id, userId)
     public List<Comment> getCommentsForPost(int postId) {
         List<Comment> comments = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT username, content, timestamp FROM Comments WHERE postId = ? ORDER BY timestamp DESC",
-                new String[]{String.valueOf(postId)});
+        Cursor cursor = db.rawQuery(
+                "SELECT id, postId, userId, username, content, timestamp FROM Comments WHERE postId = ? ORDER BY timestamp DESC",
+                new String[]{String.valueOf(postId)}
+        );
 
         if (cursor.moveToFirst()) {
             do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                int fetchedPostId = cursor.getInt(cursor.getColumnIndexOrThrow("postId"));
+                int userId = cursor.getInt(cursor.getColumnIndexOrThrow("userId"));
                 String username = cursor.getString(cursor.getColumnIndexOrThrow("username"));
                 String content = cursor.getString(cursor.getColumnIndexOrThrow("content"));
                 String timestamp = cursor.getString(cursor.getColumnIndexOrThrow("timestamp"));
 
-                Comment comment = new Comment(username, content, timestamp);
+                Comment comment = new Comment(id, fetchedPostId, userId, username, content, timestamp);
                 comments.add(comment);
+
+                Log.d("COMMENT_FETCH", "id: " + id + ", userId: " + userId + ", username: " + username + ", content: " + content + ", timestamp: " + timestamp);
+
             } while (cursor.moveToNext());
         }
 
@@ -281,7 +294,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return comments;
     }
 
-    public boolean addComment(int postId, int userId, String newComment) {
+    public boolean deleteComment(int postId, String username, String content, String timestamp) {
         return false;
+    }
+
+    // 🔹 Cập nhật bình luận (nội dung mới)
+    public boolean updateComment(int postId, String username, String oldContent, String timestamp, String newContent) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("content", newContent);
+        int rowsAffected = db.update(
+                "Comments",
+                values,
+                "postId = ? AND username = ? AND content = ? AND timestamp = ?",
+                new String[]{String.valueOf(postId), username, oldContent, timestamp}
+        );
+        db.close();
+        return rowsAffected > 0;
     }
 }

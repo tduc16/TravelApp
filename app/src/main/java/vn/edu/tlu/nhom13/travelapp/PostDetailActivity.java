@@ -39,6 +39,9 @@ public class PostDetailActivity extends AppCompatActivity {
     int userId = 0;
     String username = "";
 
+    // Dùng để xử lý sửa
+    final Comment[] editingComment = {null};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,17 +93,39 @@ public class PostDetailActivity extends AppCompatActivity {
         recyclerComments.setLayoutManager(new LinearLayoutManager(this));
         loadComments();
 
-        // Xử lý khi gửi bình luận
+        // Gửi hoặc cập nhật bình luận
         btnSendComment.setOnClickListener(v -> {
-            String newComment = edtComment.getText().toString().trim();
-            if (!newComment.isEmpty()) {
-                boolean success = dbHelper.addComment(postId, userId, username, newComment);
+            String commentText = edtComment.getText().toString().trim();
+            if (commentText.isEmpty()) return;
+
+            if (editingComment[0] == null) {
+                // ➤ Gửi bình luận mới
+                boolean success = dbHelper.addComment(postId, userId, username, commentText);
                 if (success) {
                     edtComment.setText("");
-                    loadComments(); // reload lại danh sách bình luận
-                    recyclerComments.scrollToPosition(0); // cuộn lên đầu
+                    loadComments();
+                    recyclerComments.scrollToPosition(0);
                 } else {
-                    Toast.makeText(PostDetailActivity.this, "Lỗi khi gửi bình luận", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Lỗi khi gửi bình luận", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                // ➤ Đang sửa bình luận
+                Comment oldComment = editingComment[0];
+                boolean updated = dbHelper.updateComment(
+                        postId,
+                        username,
+                        oldComment.getContent(),
+                        oldComment.getTimestamp(),
+                        commentText
+                );
+                if (updated) {
+                    Toast.makeText(this, "Đã cập nhật bình luận", Toast.LENGTH_SHORT).show();
+                    edtComment.setText("");
+                    btnSendComment.setText("Gửi");
+                    editingComment[0] = null;
+                    loadComments();
+                } else {
+                    Toast.makeText(this, "Lỗi khi cập nhật", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -108,7 +133,33 @@ public class PostDetailActivity extends AppCompatActivity {
 
     private void loadComments() {
         comments = dbHelper.getCommentsForPost(postId);
-        commentAdapter = new CommentAdapter(comments);
+        commentAdapter = new CommentAdapter(this, comments, postId);
         recyclerComments.setAdapter(commentAdapter);
+
+        // Xử lý xoá bình luận
+        commentAdapter.setOnCommentDeleteListener(position -> {
+            Comment commentToDelete = comments.get(position);
+            boolean deleted = dbHelper.deleteComment(
+                    postId,
+                    username,
+                    commentToDelete.getContent(),
+                    commentToDelete.getTimestamp()
+            );
+            if (deleted) {
+                comments.remove(position);
+                commentAdapter.notifyItemRemoved(position);
+                Toast.makeText(PostDetailActivity.this, "Đã xoá bình luận", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(PostDetailActivity.this, "Xoá thất bại", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Xử lý sửa bình luận
+        commentAdapter.setOnCommentEditListener(position -> {
+            editingComment[0] = comments.get(position);
+            edtComment.setText(editingComment[0].getContent());
+            edtComment.requestFocus();
+            btnSendComment.setText("Cập nhật");
+        });
     }
 }
