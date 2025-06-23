@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new PostAdapter(this, postList, userId, post -> {
             Intent intent = new Intent(MainActivity.this, EditPostActivity.class);
             intent.putExtra("postId", post.getId());
+            intent.putExtra("userId", userId);
             startActivity(intent);
         }, post -> {
             Intent intent = new Intent(MainActivity.this, AddPostActivity.class);intent.putExtra("userId", userId);
@@ -117,11 +118,19 @@ public class MainActivity extends AppCompatActivity {
 
         popupMenu.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
-            if (id == R.id.menu_favorite) {
+
+            if (id == R.id.menu_add) {
+                Intent intent = new Intent(MainActivity.this, AddPostActivity.class);
+                intent.putExtra("userId", userId);
+                startActivity(intent);
+                return true;
+
+            } else if (id == R.id.menu_favorite) {
                 Intent intent = new Intent(MainActivity.this, FavoritePostsActivity.class);
                 intent.putExtra("userId", userId);
                 startActivity(intent);
                 return true;
+
             } else if (id == R.id.menu_logout) {
                 Toast.makeText(MainActivity.this, "Đăng xuất", Toast.LENGTH_SHORT).show();
                 Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
@@ -129,11 +138,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(loginIntent);
                 return true;
             }
+
             return false;
         });
 
         popupMenu.show();
     }
+
 
     private void showAdminPopupMenu() {
         PopupMenu popup = new PopupMenu(this, imgAvatar);

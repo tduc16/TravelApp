@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/menu_add"
+        android:title="Thêm bài viết"
+        android:icon="@android:drawable/ic_menu_add" />
+    <item
         android:id="@+id/menu_favorite"
         android:title="Bài viết yêu thích"
         android:icon="@android:drawable/star_on" />
@@ -10,3 +14,4 @@
         android:icon="@android:drawable/ic_lock_power_off" />
 
 </menu>
+    schemas.android.com
