@@ -3,6 +3,7 @@ package vn.edu.tlu.nhom13.travelapp.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,12 +68,31 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.txtRegion.setText(post.getRegion());
         holder.txtDescription.setText(post.getDescription());
 
-        if (post.getImagePath() != null && !post.getImagePath().isEmpty()) {
-            Uri imageUri = Uri.parse(post.getImagePath());
-            Glide.with(context).load(imageUri).into(holder.imgPost);
+        String imagePath = post.getImagePath();
+        Log.d("POST_IMAGE", "Image path từ DB: " + imagePath);
+
+        if (imagePath != null && !imagePath.isEmpty()) {
+            if (imagePath.startsWith("android.resource://")) {
+                // Ảnh từ drawable
+                Uri uri = Uri.parse(imagePath);
+                Glide.with(context).load(uri).into(holder.imgPost);
+            } else {
+                // Ảnh từ bộ nhớ nội bộ
+                File imgFile = new File(imagePath);
+                Log.d("IMAGE_PATH", "Tồn tại? " + imgFile.exists());
+
+                if (imgFile.exists()) {
+                    Glide.with(context).load(imgFile).into(holder.imgPost);
+                } else {
+                    holder.imgPost.setImageResource(R.drawable.ic_launcher_background);
+                }
+            }
         } else {
             holder.imgPost.setImageResource(R.drawable.ic_launcher_background);
         }
+
+
+
 
         // Xem chi tiết bài viết
         holder.itemView.setOnClickListener(v -> {

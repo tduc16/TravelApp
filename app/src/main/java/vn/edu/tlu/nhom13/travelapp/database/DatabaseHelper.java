@@ -45,9 +45,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "userId INTEGER," +
                 "postId INTEGER)");
 
-        db.execSQL("INSERT INTO Users (username, password, role) VALUES " +
-                "('admin', '123456', 'admin')," +
-                "('user', '123456', 'user')");
         db.execSQL("CREATE TABLE Comments (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "postId INTEGER," +
@@ -56,11 +53,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "content TEXT," +
                 "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)");
 
+        // Tài khoản mặc định
+        db.execSQL("INSERT INTO Users (username, password, role) VALUES " +
+                "('admin', '123456', 'admin')," +
+                "('user', '123456', 'user')");
 
+        // Chèn 4 bài viết mẫu với ảnh từ drawable
         db.execSQL("INSERT INTO Posts (title, description, region, imagePath, status, userId) VALUES " +
-                "('Phố cổ Hà Nội', 'Khám phá ẩm thực và lịch sử phố cổ Hà Nội', 'Bắc', '', 'approved', 2)," +
-                "('Vịnh Hạ Long', 'Kỳ quan thiên nhiên thế giới', 'Bắc', '', 'approved', 2)");
+                "('Phố cổ Hà Nội', 'Khám phá văn hóa và ẩm thực khu phố cổ.', 'Bắc', 'android.resource://vn.edu.tlu.nhom13.travelapp/drawable/hanoi_old_quarter', 'approved', 2)," +
+                "('Vịnh Hạ Long', 'Di sản thiên nhiên thế giới với hàng nghìn đảo đá vôi.', 'Bắc', 'android.resource://vn.edu.tlu.nhom13.travelapp/drawable/ha_long_bay', 'approved', 2)," +
+                "('Phố cổ Hội An', 'Phố cổ với đèn lồng và kiến trúc cổ kính.', 'Trung', 'android.resource://vn.edu.tlu.nhom13.travelapp/drawable/hoi_an', 'approved', 2)," +
+                "('Đồi cát Mũi Né', 'Trượt cát và ngắm hoàng hôn tại đồi cát.', 'Nam', 'android.resource://vn.edu.tlu.nhom13.travelapp/drawable/mui_ne_dunes', 'approved', 2)");
     }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

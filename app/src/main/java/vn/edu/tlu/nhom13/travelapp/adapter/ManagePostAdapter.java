@@ -1,6 +1,7 @@
 package vn.edu.tlu.nhom13.travelapp.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
+import java.io.File;
 import java.util.List;
 
 import vn.edu.tlu.nhom13.travelapp.R;
@@ -44,9 +48,27 @@ public class ManagePostAdapter extends RecyclerView.Adapter<ManagePostAdapter.Vi
         holder.txtTitle.setText(post.getTitle());
         holder.txtRegion.setText(post.getRegion());
         holder.txtDescription.setText(post.getDescription());
-        holder.imgPost.setImageResource(R.drawable.ic_launcher_background); // hoặc load ảnh nếu có
 
-        // Hiện nút XÓA
+        // ✅ Load ảnh đúng cách với cả ảnh nội bộ và drawable
+        String imagePath = post.getImagePath();
+        if (imagePath != null && !imagePath.isEmpty()) {
+            if (imagePath.startsWith("android.resource://")) {
+                // Ảnh từ drawable (demo hoặc mẫu)
+                Glide.with(context).load(Uri.parse(imagePath)).into(holder.imgPost);
+            } else {
+                // Ảnh từ bộ nhớ nội bộ
+                File imgFile = new File(imagePath);
+                if (imgFile.exists()) {
+                    Glide.with(context).load(imgFile).into(holder.imgPost);
+                } else {
+                    holder.imgPost.setImageResource(R.drawable.ic_launcher_background);
+                }
+            }
+        } else {
+            holder.imgPost.setImageResource(R.drawable.ic_launcher_background);
+        }
+
+        // ✅ Hiện nút XÓA
         holder.btnDelete.setVisibility(View.VISIBLE);
         holder.btnDelete.setOnClickListener(v -> {
             dbHelper.deletePost(post.getId());          // Xóa khỏi DB
@@ -55,7 +77,7 @@ public class ManagePostAdapter extends RecyclerView.Adapter<ManagePostAdapter.Vi
             Toast.makeText(context, "Đã xóa bài viết", Toast.LENGTH_SHORT).show();
         });
 
-        // Ẩn các nút khác nếu cần
+        // ❌ Ẩn các nút không dùng
         holder.btnEdit.setVisibility(View.GONE);
     }
 
@@ -68,7 +90,7 @@ public class ManagePostAdapter extends RecyclerView.Adapter<ManagePostAdapter.Vi
         TextView txtTitle, txtRegion, txtDescription;
         ImageView imgPost;
         Button btnDelete;
-        View btnEdit; // chỉ để ẩn nếu layout có
+        View btnEdit;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -77,7 +99,7 @@ public class ManagePostAdapter extends RecyclerView.Adapter<ManagePostAdapter.Vi
             txtDescription = itemView.findViewById(R.id.txtDescription);
             imgPost = itemView.findViewById(R.id.imgPost);
             btnDelete = itemView.findViewById(R.id.btnDelete);
-            btnEdit = itemView.findViewById(R.id.btnEdit);   // để ẩn nếu có trong layout
+            btnEdit = itemView.findViewById(R.id.btnEdit); // để ẩn
         }
     }
 }

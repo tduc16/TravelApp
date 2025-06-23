@@ -1,9 +1,11 @@
 package vn.edu.tlu.nhom13.travelapp.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -11,6 +13,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
+import java.io.File;
 import java.util.List;
 
 import vn.edu.tlu.nhom13.travelapp.R;
@@ -48,7 +53,24 @@ public class ApprovePostAdapter extends RecyclerView.Adapter<ApprovePostAdapter.
         holder.txtRegion.setText(post.getRegion());
         holder.txtDescription.setText(post.getDescription());
 
-        // Nút duyệt
+        // ✅ Load ảnh
+        String imagePath = post.getImagePath();
+        if (imagePath != null && !imagePath.isEmpty()) {
+            if (imagePath.startsWith("android.resource://")) {
+                Glide.with(context).load(Uri.parse(imagePath)).into(holder.imgPost);
+            } else {
+                File imgFile = new File(imagePath);
+                if (imgFile.exists()) {
+                    Glide.with(context).load(imgFile).into(holder.imgPost);
+                } else {
+                    holder.imgPost.setImageResource(R.drawable.ic_launcher_background);
+                }
+            }
+        } else {
+            holder.imgPost.setImageResource(R.drawable.ic_launcher_background);
+        }
+
+        // ✅ Nút duyệt
         holder.btnApprove.setVisibility(View.VISIBLE);
         holder.btnApprove.setOnClickListener(v -> {
             db.approvePost(post.getId());
@@ -58,7 +80,7 @@ public class ApprovePostAdapter extends RecyclerView.Adapter<ApprovePostAdapter.
             }
         });
 
-        // Nút xóa
+        // ✅ Nút xóa
         holder.btnDelete.setVisibility(View.VISIBLE);
         holder.btnDelete.setOnClickListener(v -> {
             db.deletePost(post.getId());
@@ -76,6 +98,7 @@ public class ApprovePostAdapter extends RecyclerView.Adapter<ApprovePostAdapter.
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle, txtRegion, txtDescription;
+        ImageView imgPost;
         Button btnApprove, btnDelete;
 
         public ViewHolder(@NonNull View itemView) {
@@ -83,6 +106,7 @@ public class ApprovePostAdapter extends RecyclerView.Adapter<ApprovePostAdapter.
             txtTitle = itemView.findViewById(R.id.txtTitle);
             txtRegion = itemView.findViewById(R.id.txtRegion);
             txtDescription = itemView.findViewById(R.id.txtDescription);
+            imgPost = itemView.findViewById(R.id.imgPost);
             btnApprove = itemView.findViewById(R.id.btnApprove);
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }

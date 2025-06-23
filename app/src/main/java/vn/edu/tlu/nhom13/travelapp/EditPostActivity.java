@@ -1,10 +1,10 @@
 package vn.edu.tlu.nhom13.travelapp;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+
 import vn.edu.tlu.nhom13.travelapp.database.DatabaseHelper;
 import vn.edu.tlu.nhom13.travelapp.models.Post;
 
@@ -13,9 +13,7 @@ public class EditPostActivity extends AppCompatActivity {
     EditText edtTitle, edtDescription;
     Spinner spnRegion;
     Button btnUpdate;
-    ImageView imgPreview;
 
-    String imagePath;
     int postId;
 
     @Override
@@ -27,10 +25,11 @@ public class EditPostActivity extends AppCompatActivity {
         edtDescription = findViewById(R.id.edtDescription);
         spnRegion = findViewById(R.id.spnRegion);
         btnUpdate = findViewById(R.id.btnUpdate);
-        imgPreview = findViewById(R.id.imgPreview);
 
+        // Thiết lập danh sách vùng miền
         String[] regions = {"Bắc", "Trung", "Nam"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, regions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnRegion.setAdapter(adapter);
 
         // Lấy postId từ Intent
@@ -43,7 +42,7 @@ public class EditPostActivity extends AppCompatActivity {
             return;
         }
 
-        // Truy vấn dữ liệu từ cơ sở dữ liệu
+        // Truy vấn bài viết từ database
         DatabaseHelper db = new DatabaseHelper(this);
         Post post = db.getPostById(postId);
 
@@ -51,15 +50,6 @@ public class EditPostActivity extends AppCompatActivity {
             edtTitle.setText(post.getTitle());
             edtDescription.setText(post.getDescription());
             spnRegion.setSelection(adapter.getPosition(post.getRegion()));
-            imagePath = post.getImagePath();
-            if (imagePath != null && !imagePath.isEmpty()) {
-                int resId = getResources().getIdentifier(imagePath, "drawable", getPackageName());
-                if (resId != 0) {
-                    imgPreview.setImageResource(resId); // Sử dụng drawable
-                } else {
-                    imgPreview.setImageResource(android.R.color.darker_gray); // Ảnh mặc định
-                }
-            }
         } else {
             Toast.makeText(this, "Không tìm thấy bài viết", Toast.LENGTH_SHORT).show();
             finish();
@@ -76,12 +66,14 @@ public class EditPostActivity extends AppCompatActivity {
                 return;
             }
 
-            DatabaseHelper dbHelper = new DatabaseHelper(this);
-            dbHelper.updatePost(postId, newTitle, newDesc, newRegion, imagePath);
+            boolean success = db.updatePost(postId, newTitle, newDesc, newRegion, post.getImagePath());
 
-            Toast.makeText(this, "Đã cập nhật bài viết", Toast.LENGTH_SHORT).show();
-            finish();
+            if (success) {
+                Toast.makeText(this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(this, "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }
-
