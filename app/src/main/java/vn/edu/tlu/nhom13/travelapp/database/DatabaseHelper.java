@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import vn.edu.tlu.nhom13.travelapp.database.DatabaseHelper;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,14 +24,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Tạo bảng người dùng
         db.execSQL("CREATE TABLE Users (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "username TEXT UNIQUE," +
                 "password TEXT," +
                 "role TEXT DEFAULT 'user')");
 
-        // Tạo bảng bài viết
         db.execSQL("CREATE TABLE Posts (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "title TEXT," +
@@ -39,10 +39,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "status TEXT," +
                 "userId INTEGER)");
 
-        // Dữ liệu mẫu
+        db.execSQL("CREATE TABLE FavoritePosts (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "userId INTEGER," +
+                "postId INTEGER)");
+
         db.execSQL("INSERT INTO Users (username, password, role) VALUES " +
                 "('admin', '123456', 'admin')," +
                 "('user', '123456', 'user')");
+        db.execSQL("CREATE TABLE Comments (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "postId INTEGER," +
+                "userId INTEGER," +
+                "content TEXT," +
+                "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)");
+
 
         db.execSQL("INSERT INTO Posts (title, description, region, imagePath, status, userId) VALUES " +
                 "('Phố cổ Hà Nội', 'Khám phá ẩm thực và lịch sử phố cổ Hà Nội', 'Bắc', '', 'approved', 2)," +
@@ -53,10 +64,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS Users");
         db.execSQL("DROP TABLE IF EXISTS Posts");
+        db.execSQL("DROP TABLE IF EXISTS FavoritePosts");
+        db.execSQL("DROP TABLE IF EXISTS Comments");
         onCreate(db);
     }
 
-    // 🔹 Thêm bài viết mới
     public boolean addPost(String title, String description, String region, String imagePath, String status, int userId) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -70,7 +82,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    // 🔹 Sửa bài viết
     public boolean updatePost(int postId, String title, String description, String region, String imagePath) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -82,13 +93,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
-    // 🔹 Xoá bài viết
     public void deletePost(int postId) {
         SQLiteDatabase db = getWritableDatabase();
         db.delete("Posts", "id = ?", new String[]{String.valueOf(postId)});
     }
 
-    // 🔹 Duyệt bài viết (admin)
     public void approvePost(int postId) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -96,17 +105,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.update("Posts", values, "id = ?", new String[]{String.valueOf(postId)});
     }
 
-    // 🔹 Lấy bài viết đã duyệt
     public List<Post> getApprovedPosts() {
         return getPostsByStatus("approved");
     }
 
-    // 🔹 Lấy bài viết chờ duyệt
     public List<Post> getPendingPosts() {
         return getPostsByStatus("pending");
     }
 
-    // 🔹 Lấy bài viết theo userId
     public List<Post> getPostsByUserId(int userId) {
         List<Post> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
@@ -118,7 +124,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    // 🔹 Lấy bài viết theo status
     private List<Post> getPostsByStatus(String status) {
         List<Post> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
@@ -130,7 +135,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    // 🔹 Đăng ký người dùng
     public boolean registerUser(String username, String password, String role) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -141,7 +145,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    // 🔹 Đăng nhập trả về vai trò (admin/user)
     public String loginUser(String username, String password) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT role FROM Users WHERE username = ? AND password = ?",
@@ -155,7 +158,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    // 🔹 Lấy userId từ username
     public int getUserId(String username) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT id FROM Users WHERE username = ?", new String[]{username});
@@ -168,7 +170,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return -1;
     }
 
-    // 🔹 Convert Cursor → Post
     private Post cursorToPost(Cursor cursor) {
         Post post = new Post();
         post.setId(cursor.getInt(0));
@@ -190,6 +191,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return null;
         }
     }
+
     public boolean isUsernameExists(String username) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT id FROM Users WHERE username = ?", new String[]{username});
@@ -197,6 +199,71 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return exists;
     }
+
+    // 🔹 Yêu thích - kiểm tra bài viết có được user yêu thích không
+    public boolean isFavoritePost(int userId, int postId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT id FROM FavoritePosts WHERE userId = ? AND postId = ?",
+                new String[]{String.valueOf(userId), String.valueOf(postId)});
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        return exists;
+    }
+
+    // 🔹 Yêu thích - thêm bài viết vào danh sách yêu thích
+    public void addFavoritePost(int userId, int postId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("userId", userId);
+        values.put("postId", postId);
+        db.insert("FavoritePosts", null, values);
+    }
+
+    // 🔹 Yêu thích - xoá bài viết khỏi danh sách yêu thích
+    public void removeFavoritePost(int userId, int postId) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("FavoritePosts", "userId = ? AND postId = ?",
+                new String[]{String.valueOf(userId), String.valueOf(postId)});
+    }
+
+    // 🔹 Lấy danh sách bài viết yêu thích
+    public List<Post> getFavoritePosts(int userId) {
+        List<Post> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT P.* FROM Posts P " +
+                "JOIN FavoritePosts F ON P.id = F.postId " +
+                "WHERE F.userId = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+        while (cursor.moveToNext()) {
+            list.add(cursorToPost(cursor));
+        }
+        cursor.close();
+        return list;
+    }
+    // 🔹 Thêm bình luận
+    public boolean addComment(int postId, int userId, String content) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("postId", postId);
+        values.put("userId", userId);
+        values.put("content", content);
+        long result = db.insert("Comments", null, values);
+        return result != -1;
+    }
+
+    // 🔹 Lấy danh sách bình luận theo postId
+    public List<String> getCommentsForPost(int postId) {
+        List<String> comments = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT content FROM Comments WHERE postId = ? ORDER BY timestamp DESC",
+                new String[]{String.valueOf(postId)});
+
+        while (cursor.moveToNext()) {
+            comments.add(cursor.getString(0));
+        }
+        cursor.close();
+        return comments;
+    }
+
 }
-
-

@@ -25,6 +25,7 @@
             android:layout_height="200dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_launcher_background"
+            android:contentDescription="Hình ảnh bài viết"
             android:layout_marginBottom="8dp" />
 
         <TextView
@@ -43,5 +44,33 @@
             android:text="Mô tả bài viết"
             android:textColor="#333333"
             android:layout_marginBottom="16dp" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerComments"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/edtComment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nhập bình luận..."
+                android:minHeight="48dp" />
+
+            <Button
+                android:id="@+id/btnSendComment"
+                android:text="Gửi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
     </LinearLayout>
+
 </ScrollView>
