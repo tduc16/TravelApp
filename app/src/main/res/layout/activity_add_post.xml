@@ -1,65 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:padding="16dp"
+    <!-- Ảnh nền -->
+    <ImageView
+        android:id="@+id/backgroundImage"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/anhnen"
+        android:contentDescription="Ảnh nền" />
 
-        <EditText
-            android:id="@+id/edtTitle"
-            android:hint="@string/hint_title"
-            android:inputType="textCapSentences"
-            android:autofillHints="username"
-            android:minHeight="48dp"
-            android:textSize="16sp"
+    <!-- Nội dung chính -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="16dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/edtDescription"
-            android:hint="@string/hint_description"
-            android:minLines="3"
-            android:minHeight="48dp"
-            android:textSize="16sp"
-            android:inputType="textMultiLine"
-            android:autofillHints="text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/edtTitle"
+                android:hint="@string/hint_title"
+                android:inputType="textCapSentences"
+                android:autofillHints="username"
+                android:minHeight="48dp"
+                android:textSize="16sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        <Spinner
-            android:id="@+id/spnRegion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp" />
+            <EditText
+                android:id="@+id/edtDescription"
+                android:hint="@string/hint_description"
+                android:minLines="3"
+                android:minHeight="48dp"
+                android:textSize="16sp"
+                android:inputType="textMultiLine"
+                android:autofillHints="text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        <ImageView
-            android:id="@+id/imgPreview"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginVertical="8dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_foreground"
-            android:contentDescription="@string/img_preview_desc" />
+            <Spinner
+                android:id="@+id/spnRegion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp" />
 
-        <Button
-            android:id="@+id/btnChooseImage"
-            android:text="@string/btn_choose_image"
-            android:layout_width="wrap_content"
-            android:minHeight="48dp"
-            android:layout_height="wrap_content" />
+            <ImageView
+                android:id="@+id/imgPreview"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginVertical="8dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_launcher_foreground"
+                android:contentDescription="@string/img_preview_desc" />
 
-        <Button
-            android:id="@+id/btnSubmit"
-            android:text="@string/btn_submit_post"
-            android:layout_width="wrap_content"
-            android:minHeight="48dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-    </LinearLayout>
-</ScrollView>
+            <Button
+                android:id="@+id/btnChooseImage"
+                android:text="@string/btn_choose_image"
+                android:layout_width="wrap_content"
+                android:minHeight="48dp"
+                android:layout_height="wrap_content" />
 
-
+            <Button
+                android:id="@+id/btnSubmit"
+                android:text="@string/btn_submit_post"
+                android:layout_width="wrap_content"
+                android:minHeight="48dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

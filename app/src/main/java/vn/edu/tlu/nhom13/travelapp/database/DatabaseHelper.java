@@ -60,10 +60,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // Chèn 4 bài viết mẫu với ảnh từ drawable
         db.execSQL("INSERT INTO Posts (title, description, region, imagePath, status, userId) VALUES " +
-                "('Phố cổ Hà Nội', 'Khám phá văn hóa và ẩm thực khu phố cổ.', 'Bắc', 'android.resource://vn.edu.tlu.nhom13.travelapp/drawable/hanoi_old_quarter', 'approved', 2)," +
-                "('Vịnh Hạ Long', 'Di sản thiên nhiên thế giới với hàng nghìn đảo đá vôi.', 'Bắc', 'android.resource://vn.edu.tlu.nhom13.travelapp/drawable/ha_long_bay', 'approved', 2)," +
-                "('Phố cổ Hội An', 'Phố cổ với đèn lồng và kiến trúc cổ kính.', 'Trung', 'android.resource://vn.edu.tlu.nhom13.travelapp/drawable/hoi_an', 'approved', 2)," +
-                "('Đồi cát Mũi Né', 'Trượt cát và ngắm hoàng hôn tại đồi cát.', 'Nam', 'android.resource://vn.edu.tlu.nhom13.travelapp/drawable/mui_ne_dunes', 'approved', 2)");
+
+                "('Phố cổ Hà Nội', " +
+                "'Phố cổ Hà Nội là linh hồn văn hóa của Thủ đô, nơi lưu giữ những giá trị truyền thống qua hàng thế kỷ. Dạo bước trên các con phố như Hàng Đào, Hàng Gai, Hàng Mã, bạn như lạc vào một không gian vừa cổ kính vừa sống động. Những mái nhà cổ mái ngói đỏ, ô cửa gỗ, bức tường vàng bạc màu thời gian tạo nên một khung cảnh đầy chất thơ. Ẩm thực nơi đây là điểm nhấn không thể bỏ qua: từ phở bò, bún chả, nem rán, cho đến cà phê trứng - tất cả đều mang hương vị riêng biệt không nơi nào có được. Buổi sáng bạn có thể ghé hồ Hoàn Kiếm, ngắm tháp Rùa lặng yên giữa mặt hồ phẳng lặng. Buổi tối, phố đi bộ và chợ đêm trở nên nhộn nhịp với ánh đèn, tiếng nhạc và sắc màu văn hóa đậm đà. Dù là du khách lần đầu ghé thăm hay người con Hà Nội trở về, phố cổ luôn có điều gì đó khiến người ta xao xuyến và lưu luyến.', " +
+                "'Bắc', 'android.resource://vn.edu.tlu.nhom13.travelapp/drawable/hanoi_old_quarter', 'approved', 2)," +
+
+                "('Vịnh Hạ Long', " +
+                "'Được UNESCO công nhận là di sản thiên nhiên thế giới, Vịnh Hạ Long là một trong những kỳ quan nổi bật của Việt Nam với vẻ đẹp vừa hùng vĩ vừa nên thơ. Hàng nghìn hòn đảo đá vôi lớn nhỏ nổi bật trên làn nước xanh biếc tạo thành một bức tranh thủy mặc khổng lồ giữa biển trời bao la. Bạn có thể chọn hành trình du thuyền qua những điểm nổi bật như hang Sửng Sốt, động Thiên Cung, đảo Ti Tốp... hoặc trải nghiệm chèo kayak, lặn biển ngắm san hô, thả lưới câu mực về đêm. Không chỉ có cảnh quan, Hạ Long còn hấp dẫn bởi hải sản tươi ngon, những làng chài cổ và nền văn hóa biển phong phú. Đây là điểm đến lý tưởng cho cả gia đình, cặp đôi và nhóm bạn, đặc biệt là những ai yêu thiên nhiên và muốn tạm rời xa phố thị ồn ào để hòa mình vào cảnh sắc tuyệt mỹ.', " +
+                "'Bắc', 'android.resource://vn.edu.tlu.nhom13.travelapp/drawable/ha_long_bay', 'approved', 2)," +
+
+                "('Phố cổ Hội An', " +
+                "'Hội An là một thành phố cổ yên bình nằm bên bờ sông Hoài, nổi tiếng với những con đường lát đá, ngôi nhà gỗ truyền thống và ánh đèn lồng rực rỡ mỗi đêm. Khi bước vào khu phố cổ, bạn như trở về quá khứ với không gian cổ kính của thế kỷ 17 - 18, nơi từng là thương cảng sầm uất bậc nhất Đông Nam Á. Những quán cà phê nhỏ ven sông, những cửa hàng may đo áo dài, vải vóc và những căn nhà cổ mang đậm dấu ấn kiến trúc Nhật – Trung – Việt hòa quyện. Hội An không chỉ đẹp về cảnh mà còn phong phú về ẩm thực: cao lầu, mì Quảng, bánh hoa hồng trắng hay chè mè đen đều là những món đặc sản níu chân du khách. Đặc biệt, mỗi rằm âm lịch, phố cổ tắt hết đèn điện, chỉ thắp sáng bằng đèn lồng - tạo nên khung cảnh huyền ảo và đầy mê hoặc. Đây là một nơi không chỉ để tham quan mà còn để sống chậm, chiêm nghiệm và cảm nhận sâu sắc giá trị văn hóa truyền thống.', " +
+                "'Trung', 'android.resource://vn.edu.tlu.nhom13.travelapp/drawable/hoi_an', 'approved', 2)," +
+
+                "('Đồi cát Mũi Né', " +
+                "'Đồi cát Mũi Né là một trong những điểm đến độc đáo nhất của tỉnh Bình Thuận, thu hút du khách bởi khung cảnh giống như sa mạc thu nhỏ giữa lòng miền Trung. Tại đây, những đụn cát vàng cam trải dài bất tận liên tục thay đổi hình dáng theo gió, tạo nên khung cảnh vừa kỳ ảo vừa sống động. Vào sáng sớm hoặc chiều muộn, ánh nắng chiếu xiên qua các đồi cát tạo nên bức tranh thiên nhiên rực rỡ. Du khách có thể trải nghiệm nhiều hoạt động thú vị như trượt cát, thuê xe mô tô địa hình, hay đơn giản là ngồi ngắm hoàng hôn rơi dần xuống mặt cát. Không xa đồi cát là làng chài Mũi Né – nơi bạn có thể thưởng thức hải sản tươi sống ngay khi vừa cập bến. Mũi Né còn có nhiều resort ven biển đẹp, thích hợp cho kỳ nghỉ dưỡng thư giãn bên gia đình và bạn bè. Đây là một địa danh kết hợp giữa vẻ đẹp hoang sơ và trải nghiệm du lịch năng động.', " +
+                "'Nam', 'android.resource://vn.edu.tlu.nhom13.travelapp/drawable/mui_ne_dunes', 'approved', 2)");
+
     }
 
 
