@@ -139,12 +139,8 @@ public class PostDetailActivity extends AppCompatActivity {
         // Xử lý xoá bình luận
         commentAdapter.setOnCommentDeleteListener(position -> {
             Comment commentToDelete = comments.get(position);
-            boolean deleted = dbHelper.deleteComment(
-                    postId,
-                    username,
-                    commentToDelete.getContent(),
-                    commentToDelete.getTimestamp()
-            );
+            boolean deleted = dbHelper.deleteComment(commentToDelete.getId());
+            ;
             if (deleted) {
                 comments.remove(position);
                 commentAdapter.notifyItemRemoved(position);

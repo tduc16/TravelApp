@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import vn.edu.tlu.nhom13.travelapp.models.Comment;
 import android.util.Log;
-import vn.edu.tlu.nhom13.travelapp.database.DatabaseHelper;
 
 
 import java.util.ArrayList;
@@ -294,9 +293,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return comments;
     }
 
-    public boolean deleteComment(int postId, String username, String content, String timestamp) {
-        return false;
+    public boolean deleteComment(int commentId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete("Comments", "id = ?", new String[]{String.valueOf(commentId)});
+        db.close();
+        return result > 0;
     }
+
 
     // 🔹 Cập nhật bình luận (nội dung mới)
     public boolean updateComment(int postId, String username, String oldContent, String timestamp, String newContent) {
