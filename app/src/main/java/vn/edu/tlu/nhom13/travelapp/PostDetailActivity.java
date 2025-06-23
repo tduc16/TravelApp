@@ -65,8 +65,8 @@ public class PostDetailActivity extends AppCompatActivity {
         String imagePath = intent.getStringExtra("imagePath");
 
         try {
-            postId = Integer.parseInt(Objects.requireNonNull(intent.getStringExtra("postId")));
-        } catch (NumberFormatException e) {
+            postId = Integer.parseInt(intent.getStringExtra("postId"));
+        } catch (Exception e) {
             postId = 0;
         }
 
