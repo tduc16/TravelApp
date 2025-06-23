@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import vn.edu.tlu.nhom13.travelapp.models.Comment;
 import vn.edu.tlu.nhom13.travelapp.database.DatabaseHelper;
 
 
@@ -16,7 +17,7 @@ import vn.edu.tlu.nhom13.travelapp.models.Post;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "TravelApp.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -51,6 +52,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "postId INTEGER," +
                 "userId INTEGER," +
+                "username TEXT," +
                 "content TEXT," +
                 "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)");
 
@@ -241,29 +243,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
     // 🔹 Thêm bình luận
-    public boolean addComment(int postId, int userId, String content) {
+    public boolean addComment(int postId, int userId, String username, String content) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("postId", postId);
         values.put("userId", userId);
+        values.put("username", username);  // thêm username
         values.put("content", content);
+        values.put("timestamp", System.currentTimeMillis());
         long result = db.insert("Comments", null, values);
+        db.close();
         return result != -1;
     }
 
+
     // 🔹 Lấy danh sách bình luận theo postId
-    public List<String> getCommentsForPost(int postId) {
-        List<String> comments = new ArrayList<>();
+    public List<Comment> getCommentsForPost(int postId) {
+        List<Comment> comments = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT content FROM Comments WHERE postId = ? ORDER BY timestamp DESC",
+        Cursor cursor = db.rawQuery("SELECT username, content, timestamp FROM Comments WHERE postId = ? ORDER BY timestamp DESC",
                 new String[]{String.valueOf(postId)});
 
-        while (cursor.moveToNext()) {
-            comments.add(cursor.getString(0));
+        if (cursor.moveToFirst()) {
+            do {
+                String username = cursor.getString(cursor.getColumnIndexOrThrow("username"));
+                String content = cursor.getString(cursor.getColumnIndexOrThrow("content"));
+                String timestamp = cursor.getString(cursor.getColumnIndexOrThrow("timestamp"));
+
+                Comment comment = new Comment(username, content, timestamp);
+                comments.add(comment);
+            } while (cursor.moveToNext());
         }
+
         cursor.close();
+        db.close();
         return comments;
     }
 
+    public boolean addComment(int postId, int userId, String newComment) {
+        return false;
+    }
 }

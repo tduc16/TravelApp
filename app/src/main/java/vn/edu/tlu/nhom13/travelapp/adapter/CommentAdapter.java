@@ -6,8 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import vn.edu.tlu.nhom13.travelapp.R;
-
-
+import vn.edu.tlu.nhom13.travelapp.models.Comment;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,9 +15,9 @@ import java.util.List;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHolder> {
 
-    private final List<String> comments;
+    private final List<Comment> comments;
 
-    public CommentAdapter(List<String> comments) {
+    public CommentAdapter(List<Comment> comments) {
         this.comments = comments;
     }
 
@@ -31,7 +30,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
-        holder.txtComment.setText(comments.get(position));
+        Comment comment = comments.get(position);
+        holder.txtUsername.setText(comment.getUsername());
+        holder.txtComment.setText(comment.getContent());
     }
 
     @Override
@@ -40,10 +41,12 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     }
 
     public static class CommentViewHolder extends RecyclerView.ViewHolder {
+        TextView txtUsername;
         TextView txtComment;
 
         public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
+            txtUsername = itemView.findViewById(R.id.txtUsername);
             txtComment = itemView.findViewById(R.id.txtComment);
         }
     }
