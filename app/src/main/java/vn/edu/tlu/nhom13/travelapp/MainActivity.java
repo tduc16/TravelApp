@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -52,7 +51,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         txtUsername.setText(username);
-        imgAvatar.setOnClickListener(v -> showUserMenu());
+
+        if ("user".equals(role)) {
+            imgAvatar.setOnClickListener(v -> showUserPopupMenu());
+        } else {
+            imgAvatar.setOnClickListener(v -> showAdminPopupMenu());
+        }
 
         setupRecyclerView();
         setupSearchFilter();
@@ -88,8 +92,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("postId", post.getId());
             startActivity(intent);
         }, post -> {
-            Intent intent = new Intent(MainActivity.this, AddPostActivity.class);
-            intent.putExtra("userId", userId);
+            Intent intent = new Intent(MainActivity.this, AddPostActivity.class);intent.putExtra("userId", userId);
             startActivity(intent);
         });
 
@@ -108,14 +111,33 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void showUserMenu() {
+    private void showUserPopupMenu() {
+        PopupMenu popupMenu = new PopupMenu(MainActivity.this, imgAvatar);
+        popupMenu.getMenuInflater().inflate(R.menu.user_options_menu, popupMenu.getMenu());
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.menu_favorite) {
+                Intent intent = new Intent(MainActivity.this, FavoritePostsActivity.class);
+                intent.putExtra("userId", userId);
+                startActivity(intent);
+                return true;
+            } else if (id == R.id.menu_logout) {
+                Toast.makeText(MainActivity.this, "Đăng xuất", Toast.LENGTH_SHORT).show();
+                Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+                loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(loginIntent);
+                return true;
+            }
+            return false;
+        });
+
+        popupMenu.show();
+    }
+
+    private void showAdminPopupMenu() {
         PopupMenu popup = new PopupMenu(this, imgAvatar);
         popup.getMenuInflater().inflate(R.menu.user_menu, popup.getMenu());
-
-        if (role.equals("user")) {
-            popup.getMenu().findItem(R.id.menu_approve).setVisible(false);
-            popup.getMenu().findItem(R.id.menu_manage).setVisible(false);
-        }
 
         popup.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();

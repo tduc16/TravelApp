@@ -20,6 +20,7 @@ import java.util.List;
 
 import vn.edu.tlu.nhom13.travelapp.PostDetailActivity;
 import vn.edu.tlu.nhom13.travelapp.R;
+import vn.edu.tlu.nhom13.travelapp.database.DatabaseHelper;
 import vn.edu.tlu.nhom13.travelapp.models.Post;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
@@ -30,6 +31,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private final OnEditClickListener editClickListener;
     private final OnAddClickListener addClickListener;
     private int currentUserId;
+    private DatabaseHelper dbHelper;
 
     public interface OnEditClickListener {
         void onEditClick(Post post);
@@ -47,6 +49,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         this.currentUserId = currentUserId;
         this.editClickListener = editClickListener;
         this.addClickListener = addClickListener;
+        this.dbHelper = new DatabaseHelper(context);
     }
 
     @NonNull
@@ -70,7 +73,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.imgPost.setImageResource(R.drawable.ic_launcher_background);
         }
 
-        // Click để xem chi tiết
+        // Xem chi tiết bài viết
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, PostDetailActivity.class);
             intent.putExtra("title", post.getTitle());
@@ -80,20 +83,34 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             context.startActivity(intent);
         });
 
-        // Chỉ hiển thị nút nếu là bài viết của user đang đăng nhập
+        // Nút sửa bài viết (chỉ hiện nếu là chủ bài viết)
         if (post.getUserId() == currentUserId) {
             holder.btnEdit.setVisibility(View.VISIBLE);
-
             holder.btnEdit.setOnClickListener(v -> {
                 if (editClickListener != null) {
                     editClickListener.onEditClick(post);
                 }
             });
-
         } else {
             holder.btnEdit.setVisibility(View.GONE);
-
         }
+
+        // Trái tim yêu thích
+        boolean isFavorite = dbHelper.isFavoritePost(currentUserId, post.getId());
+        holder.btnFavorite.setImageResource(
+                isFavorite ? R.drawable.ic_favorite_filled : R.drawable.ic_favorite_border
+        );
+
+        holder.btnFavorite.setOnClickListener(v -> {
+            boolean currentlyFavorite = dbHelper.isFavoritePost(currentUserId, post.getId());
+            if (currentlyFavorite) {
+                dbHelper.removeFavoritePost(currentUserId, post.getId());
+                holder.btnFavorite.setImageResource(R.drawable.ic_favorite_border);
+            } else {
+                dbHelper.addFavoritePost(currentUserId, post.getId());
+                holder.btnFavorite.setImageResource(R.drawable.ic_favorite_filled);
+            }
+        });
     }
 
     @Override
@@ -128,7 +145,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle, txtRegion, txtDescription;
-        ImageView imgPost;
+        ImageView imgPost, btnFavorite;
         ImageButton btnEdit;
 
         public PostViewHolder(@NonNull View itemView) {
@@ -138,6 +155,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             txtDescription = itemView.findViewById(R.id.txtDescription);
             imgPost = itemView.findViewById(R.id.imgPost);
             btnEdit = itemView.findViewById(R.id.btnEdit);
+            btnFavorite = itemView.findViewById(R.id.btnFavorite);
         }
     }
 }

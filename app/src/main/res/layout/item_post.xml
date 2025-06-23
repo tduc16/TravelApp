@@ -44,13 +44,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <!-- Các nút chức năng: Duyệt / Xóa / Sửa -->
+    <!-- Các nút chức năng -->
     <LinearLayout
         android:layout_marginTop="8dp"
         android:orientation="horizontal"
         android:gravity="end"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <Button
             android:id="@+id/btnDelete"
             android:text="Xóa"
@@ -58,6 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:visibility="gone" />
+
         <Button
             android:id="@+id/btnApprove"
             android:text="Duyệt"
@@ -65,7 +67,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:visibility="gone" />
-
 
         <ImageButton
             android:id="@+id/btnEdit"
@@ -76,8 +77,16 @@
             android:src="@android:drawable/ic_menu_edit"
             android:contentDescription="Sửa bài viết"
             android:visibility="gone" />
+
+        <!-- Nút yêu thích -->
+        <ImageView
+            android:id="@+id/btnFavorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_favorite_border"
+            android:contentDescription="Yêu thích"
+            android:layout_marginStart="8dp"
+            />
     </LinearLayout>
 
 </LinearLayout>
-
-
